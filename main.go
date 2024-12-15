@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Teleram_GO/errors"
 	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -15,12 +16,12 @@ type Config struct {
 func loadJson(path string) (*Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		log.Fatal("MY ERORR")
+		log.Fatal(errors.ErrorOpenFile)
 	}
 	defer file.Close()
 	var config Config
 	if err := json.NewDecoder(file).Decode(&config); err != nil {
-		return nil, fmt.Errorf("MY ERORR")
+		return nil, fmt.Errorf("%s:\n", errors.ErrorDecoderFile, err)
 	}
 	return &config, nil
 }
@@ -28,12 +29,12 @@ func loadJson(path string) (*Config, error) {
 func main() {
 	config, err := loadJson("config/config.json")
 	if err != nil {
-		log.Fatalf("Ошибка загрузки конфигурации: %v", err)
+		log.Fatalf("%s: %v", errors.ErrorLoadConfiguration, err)
 	}
 
 	bot, err := tgbotapi.NewBotAPI(config.Token)
 	if err != nil {
-		log.Panic("My ERROR")
+		log.Panic(errors.ErrrorRunBot, err)
 	}
 	bot.Debug = true
 
